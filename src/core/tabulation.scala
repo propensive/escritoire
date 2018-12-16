@@ -19,11 +19,6 @@
 */
 package escritoire
 
-import language.implicitConversions
-
-import scala.collection.mutable.ListBuffer
-import scala.collection.immutable.ListMap
-
 object Ansi {
   val esc = 27.toChar
   val reset: String = s"$esc[39;49m"
@@ -32,15 +27,21 @@ object Ansi {
   def strike(str: String): String = s"$esc[9m$str$esc[29m"
   def italic(str: String): String = s"$esc[3m$str$esc[23m"
   def reverse(str: String): String = s"$esc[7m$str$esc[27m"
+  def up(n: Int): String = s"$esc[${n}A"
+  def down(n: Int): String = s"$esc[${n}B"
+  def right(n: Int): String = s"$esc[${n}C"
+  def left(n: Int): String = s"$esc[${n}D"
 
   case class Color(red: Int, green: Int, blue: Int) {
-    def apply(str: String): String = s"$esc[38;2;$red;$green;${blue}m$str$reset"
+    def apply(str: String): String = s"${apply()}$str$reset"
     def fade(amount: Double) = Color((red*amount).toInt, (green*amount).toInt, (blue*amount).toInt)
     def brighten(amount: Double) = Color(
       (255 - (255 - red)*amount).toInt,
       (255 - (255 - green)*amount).toInt,
       (255 - (255 - blue)*amount).toInt
     )
+    def apply(): String = s"$esc[38;2;$red;$green;${blue}m"
+    def escaped: String = s"%{${apply()}%}"
   }
 
   object Color {
