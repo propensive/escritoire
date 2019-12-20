@@ -110,11 +110,14 @@ case class Tabulation[Row](headings: Heading[Row]*) {
         widths.zip(next).map { case (w, xs) => xs.map { c => Ansi.strip(c).length }.max max w }
     }
 
-    val hr = maxWidths.map { w => "─"*(w + 2) }.mkString(s"${Ansi.Color.base00()}╟", "┼", s"╢${reset}")
-    val endHr = maxWidths.map { w => "═"*(w + 2) }.mkString(s"${Ansi.Color.base00()}╚", "╧", s"╝${reset}")
-    val startHr = maxWidths.map { w => "═"*(w + 2) }.mkString(s"${Ansi.Color.base00()}╔", "╤", s"╗${reset}")
-    val midHr = maxWidths.map { w => "═"*(w + 2) }.mkString(s"${Ansi.Color.base00()}╠", "╪", s"╣${reset}")
 
+    def rule(left: Char, mid: Char, cross: Char, right: Char) =
+      maxWidths.map { w => "$mid"*(w + 2) }.mkString(s"${ansi.getOrElse("")}$left", "$cross", s"$right${reset}")
+    
+    val hr      = if(tight) Nil else List(rule('╟', '─', '┼', '╢'))
+    val endHr   = if(tight) rule('└', '─', '┴', '┘') else rule('╚', '═', '╧', '╝')
+    val startHr = if(tight) rule('┌', '─', '┬', '┐') else rule('╔', '═', '╤', '╗')
+    val midHr   = if(tight) rule('├', '─', '┼', '┤') else rule('╠', '═', '╪', '╢')
 
     val totalWidth = maxWidths.sum + maxWidths.length * padding
     val flexibleWidths = headings.filter(_.width == FlexibleWidth).size
@@ -145,9 +148,9 @@ case class Tabulation[Row](headings: Heading[Row]*) {
     }
 
     List(startHr) ++ data.flatMap { cells =>
-      hr :: cells.zip(widths).zip(headings).map { case ((lines, width), heading) =>
+      hr ++ cells.zip(widths).zip(headings).map { case ((lines, width), heading) =>
         lines.padTo(cells.map(_.length).max, "").map(pad(_, width, heading.align, reset))
-      }.transpose.map(_.mkString(s"${Ansi.Color.base00()}║${reset} ", s" ${Ansi.Color.base00()}│${reset} ", s" ${Ansi.Color.base00()}║${reset}"))
+      }.transpose.map(_.mkString(s"${ansi.getOrElse("")}║${reset} ", s" ${ansi.getOrElse("")}│${reset} ", s" ${ansi.getOrElse("")}║${reset}"))
     }.tail.patch(1, List(midHr), 1) ++ List(endHr)
   }
 
