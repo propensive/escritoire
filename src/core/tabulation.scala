@@ -150,8 +150,8 @@ case class Tabulation[Row](headings: Heading[Row]*) {
     List(startHr) ++ data.flatMap { cells =>
       hr ++ cells.zip(widths).zip(headings).map { case ((lines, width), heading) =>
         lines.padTo(cells.map(_.length).max, "").map(pad(_, width, heading.align, reset))
-      }.transpose.map(_.mkString(s"${ansi.getOrElse("")}${if(tight) "│" else "║"}${reset} ", s" ${ansi.getOrElse("")}│${reset} ", s" ${ansi.getOrElse("")}║${reset}"))
-    }.tail.patch(if(tight) 0 else 1, List(midHr), 0) ++ List(endHr)
+      }.transpose.map(_.mkString(s"${ansi.getOrElse("")}${if(tight) "│" else "║"}${reset} ", s" ${ansi.getOrElse("")}│${reset} ", s" ${ansi.getOrElse("")}${if(tight) "│" else "║"}${reset}"))
+    }.drop(if(tight) 0 else 1).patch(1, List(midHr), if(tight) 0 else 1) ++ List(endHr)
   }
 
   private def pad(str: String, width: Int, alignment: Alignment, reset: String): String = {
