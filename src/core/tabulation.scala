@@ -112,7 +112,7 @@ case class Tabulation[Row](headings: Heading[Row]*) {
 
 
     def rule(left: Char, mid: Char, cross: Char, right: Char) =
-      maxWidths.map { w => "$mid"*(w + 2) }.mkString(s"${ansi.getOrElse("")}$left", "$cross", s"$right${reset}")
+      maxWidths.map { w => s"$mid"*(w + 2) }.mkString(s"${ansi.getOrElse("")}$left", s"$cross", s"$right${reset}")
     
     val hr      = if(tight) Nil else List(rule('╟', '─', '┼', '╢'))
     val endHr   = if(tight) rule('└', '─', '┴', '┘') else rule('╚', '═', '╧', '╝')
