@@ -176,7 +176,7 @@ object AnsiShow {
     df
   }
 
-  implicit val string: AnsiShow[String] = identity
+  implicit val string: AnsiShow[String] = identity(_)
   implicit val int: AnsiShow[Int] = _.toString
   implicit val double: AnsiShow[Double] = decimalFormat.format(_)
   implicit val lines: AnsiShow[Seq[String]] = _.mkString("\n")
