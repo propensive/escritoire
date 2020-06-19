@@ -95,10 +95,10 @@ case class Tabulation[Row](headings: Heading[Row]*) {
   def padding: Int = 2
 
   def tabulate(maxWidth: Int, rows: Seq[Row]): Seq[String] = {
-    val titleStrings = headings.to[List].map { h => List(h.name) }
+    val titleStrings = headings.toList.map { h => List(h.name) }
     
     val data: Seq[List[List[String]]] = titleStrings.map(_.map(Ansi.underline(_))) +: (rows.map { row =>
-      headings.to[List].map { _.get(row).split("\n").to[List] }
+      headings.toList.map { _.get(row).split("\n").toList }
     })
 
     val tight = !data.exists(_.exists(_.length > 1))
