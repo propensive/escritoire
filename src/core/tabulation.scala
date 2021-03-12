@@ -78,7 +78,7 @@ object Heading {
                               width: Width = FlexibleWidth,
                               align: Alignment = LeftAlign): Heading[Row] =
     new Heading[Row](name, width, align) {
-      def get(r: Row): String = summon[AnsiShow[V]].show(getter(r))
+      def get(r: Row): String = implicitly[AnsiShow[V]].show(getter(r))
     }
 }
 
@@ -174,18 +174,10 @@ object AnsiShow {
     df
   }
 
-  given stringShow: AnsiShow[String] with {
-    def show(value: String): String = identity(value)
-  }
-  given intShow: AnsiShow[Int] with {
-    def show(value: Int): String = value.toString
-  }
-  given doubleShow: AnsiShow[Double] with {
-    def show(value: Double): String = decimalFormat.format(value)
-  }
-  given linesShow: AnsiShow[Seq[String]] with {
-    def show(value: Seq[String]): String = value.mkString("\n")
-  }
+  implicit val stringShow: AnsiShow[String] = identity(_)
+  implicit val intShow: AnsiShow[Int] = _.toString
+  implicit val doubleShow: AnsiShow[Double]  = decimalFormat.format(_)
+  implicit val linesShow: AnsiShow[Seq[String]] = _.mkString("\n")
 }
 
 trait AnsiShow[T] { def show(value: T): String }

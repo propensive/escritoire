@@ -30,5 +30,6 @@ ThisBuild / publishMavenStyle := true
 lazy val core = (project in file(".core"))
   .settings(
     name := "escritoire-core",
+    crossScalaVersions := Seq("3.0.0-RC1", "2.13.5", "2.12.13"),
     Compile / scalaSource := baseDirectory.value / ".." / "src" / "core",
   )
