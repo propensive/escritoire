@@ -19,8 +19,6 @@
 */
 package escritoire
 
-import language.implicitConversions
-
 import scala.collection.mutable.ListBuffer
 import scala.collection.immutable.ListMap
 
@@ -95,10 +93,10 @@ case class Tabulation[Row](headings: Heading[Row]*) {
   def padding: Int = 2
 
   def tabulate(maxWidth: Int, rows: Seq[Row]): Seq[String] = {
-    val titleStrings = headings.to[List].map { h => List(h.name) }
+    val titleStrings = headings.toList.map { h => List(h.name) }
     
     val data: Seq[List[List[String]]] = titleStrings.map(_.map(Ansi.underline(_))) +: (rows.map { row =>
-      headings.to[List].map { _.get(row).split("\n").to[List] }
+      headings.toList.map { _.get(row).split("\n").toList }
     })
 
     val tight = !data.exists(_.exists(_.length > 1))
@@ -176,10 +174,10 @@ object AnsiShow {
     df
   }
 
-  implicit val string: AnsiShow[String] = identity
-  implicit val int: AnsiShow[Int] = _.toString
-  implicit val double: AnsiShow[Double] = decimalFormat.format(_)
-  implicit val lines: AnsiShow[Seq[String]] = _.mkString("\n")
+  implicit val stringShow: AnsiShow[String] = identity(_)
+  implicit val intShow: AnsiShow[Int] = _.toString
+  implicit val doubleShow: AnsiShow[Double]  = decimalFormat.format(_)
+  implicit val linesShow: AnsiShow[Seq[String]] = _.mkString("\n")
 }
 
 trait AnsiShow[T] { def show(value: T): String }
