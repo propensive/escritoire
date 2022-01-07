@@ -74,7 +74,7 @@ case class Tabulation[T: ClassTag](cols: Column[T]*):
         val w = (proposed(col) + 0.5).toInt.min(col.width.max).max(col.width.min)
         rewidth(rest, proposed, map.updated(col, (col.width.min + w)))
 
-  def initialWidths(total: Int): IArray[Int] throws TableWidthError =
+  def initialWidths(total: Int): IArray[Int] =
     val mins = colsArray.map(_.width.min)
     val maxs = colsArray.map(_.width.max)
     if total < mins.sum || total > maxs.sum then throw TableWidthError(total)
@@ -83,14 +83,14 @@ case class Tabulation[T: ClassTag](cols: Column[T]*):
     colsArray.map(ws(_))
 
   def tabulate(rows: Seq[T], width: Int, style: BorderStyle)
-              : Unit throws TableWidthError =//IArray[AnsiString] throws TableWidthError =
+              : Unit =//IArray[AnsiString] =
     val cells: IArray[IArray[AnsiString]] =
       val rowsArray: IArray[T] = IArray.from(rows)
       rowsArray.map { row => colsArray.map { col => col.cell(row) } }
 
     val inits = initialWidths(width - style.spacing(cols.length))
 
-    def height(content: Text, width: Int): Int throws TableWidthError =
+    def height(content: Text, width: Int): Int =
       var idx = 0
       var lastSpace = -1
       var lastZwsp = -1
